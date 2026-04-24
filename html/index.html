@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COREX Death</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="death-screen" class="hidden">
+        <div class="vignette"></div>
+
+        <div class="blood-drip blood-drip-1"></div>
+        <div class="blood-drip blood-drip-2"></div>
+        <div class="blood-drip blood-drip-3"></div>
+
+        <div class="particle-field">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+
+        <div class="death-content">
+            <div class="death-icon">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M32 4C18.7 4 8 14.7 8 28c0 8.4 4.3 15.8 10.8 20.1L16 56h6l2-4h16l2 4h6l-2.8-7.9C51.7 43.8 56 36.4 56 28 56 14.7 45.3 4 32 4z" fill="currentColor" opacity="0.15"/>
+                    <path d="M32 4C18.7 4 8 14.7 8 28c0 8.4 4.3 15.8 10.8 20.1L16 56h6l2-4h16l2 4h6l-2.8-7.9C51.7 43.8 56 36.4 56 28 56 14.7 45.3 4 32 4z" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <circle cx="22" cy="26" r="5" fill="currentColor"/>
+                    <circle cx="42" cy="26" r="5" fill="currentColor"/>
+                    <path d="M26 40h12" stroke="currentColor" stroke-width="2"/>
+                    <path d="M28 40v4M32 40v4M36 40v4" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+            </div>
+
+            <h1 class="death-title">YOU DIED</h1>
+
+            <div class="death-line"></div>
+
+            <div class="timer-section">
+                <p class="timer-label">RESPAWN AVAILABLE IN</p>
+                <div class="timer-display">
+                    <span id="timer-value">15</span>
+                    <span class="timer-unit">SEC</span>
+                </div>
+                <div class="timer-bar-track">
+                    <div id="timer-bar" class="timer-bar-fill"></div>
+                </div>
+            </div>
+
+            <button id="respawn-btn" class="respawn-btn hidden" type="button">
+                <span class="btn-text">RESPAWN</span>
+                <span class="btn-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 4v6h6M23 20v-6h-6"/>
+                        <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/>
+                    </svg>
+                </span>
+            </button>
+
+            <p id="respawn-hint" class="respawn-hint">PRESS <kbd>ENTER</kbd>, <kbd>SPACE</kbd>, OR <kbd>E</kbd></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
