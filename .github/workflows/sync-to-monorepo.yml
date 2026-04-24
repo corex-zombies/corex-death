@@ -20,6 +20,8 @@ jobs:
           SYNC_PAT: ${{ secrets.SYNC_PAT }}
         run: |
           git clone --depth=1 "https://x-access-token:${SYNC_PAT}@github.com/ABUGIZA/COREX-Framework.git" monorepo
+          cd monorepo
+          git remote set-url origin "https://x-access-token:${SYNC_PAT}@github.com/ABUGIZA/COREX-Framework.git"
 
       - name: Sync contents into monorepo
         run: |
@@ -32,6 +34,8 @@ jobs:
             src/ "$TARGET/"
 
       - name: Commit & push
+        env:
+          SYNC_PAT: ${{ secrets.SYNC_PAT }}
         run: |
           cd monorepo
           git config user.name "corex-sync-bot"
@@ -44,4 +48,4 @@ jobs:
           REPO_NAME="${GITHUB_REPOSITORY##*/}"
           SHORT_SHA="${GITHUB_SHA:0:7}"
           git commit -m "sync: ${REPO_NAME} @ ${SHORT_SHA}"
-          git push
+          git push "https://x-access-token:${SYNC_PAT}@github.com/ABUGIZA/COREX-Framework.git" HEAD:main
