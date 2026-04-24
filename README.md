@@ -28,4 +28,4 @@ Download the latest release ZIP from the **Releases** tab and replace the folder
 💬 <https://discord.gg/G95rtnb9sg>
 
 ## License
-Private — all rights reserved.
+Released under the [MIT License](LICENSE).
