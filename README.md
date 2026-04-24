@@ -1,6 +1,6 @@
 # corex-death
 
-> Death and respawn flow for COREX Framework
+> Death UI, respawn flow, and rag-doll physics.
 
 Part of the [COREX Framework](https://github.com/ABUGIZA/COREX-Framework).
 
@@ -22,7 +22,7 @@ ensure corex-death
 Download the latest release ZIP from the **Releases** tab and replace the folder.
 
 ## Docs
-📖 <https://corex-zombies.gitbook.io/corex-docs>
+📖 <https://corex-zombies.gitbook.io/corex-docs/resources/player/corex-death>
 
 ## Community
 💬 <https://discord.gg/G95rtnb9sg>
