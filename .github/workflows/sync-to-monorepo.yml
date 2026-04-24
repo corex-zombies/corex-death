@@ -1,0 +1,47 @@
+name: Sync to COREX-Framework monorepo
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this script
+        uses: actions/checkout@v4
+        with:
+          path: src
+          fetch-depth: 1
+
+      - name: Clone monorepo
+        env:
+          SYNC_PAT: ${{ secrets.SYNC_PAT }}
+        run: |
+          git clone --depth=1 "https://x-access-token:${SYNC_PAT}@github.com/ABUGIZA/COREX-Framework.git" monorepo
+
+      - name: Sync contents into monorepo
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY##*/}"
+          TARGET="monorepo/server-file/resources/[corex]/${REPO_NAME}"
+          mkdir -p "$TARGET"
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            src/ "$TARGET/"
+
+      - name: Commit & push
+        run: |
+          cd monorepo
+          git config user.name "corex-sync-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to sync."
+            exit 0
+          fi
+          REPO_NAME="${GITHUB_REPOSITORY##*/}"
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+          git commit -m "sync: ${REPO_NAME} @ ${SHORT_SHA}"
+          git push
