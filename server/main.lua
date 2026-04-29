@@ -172,10 +172,18 @@ local function CompleteRespawn(src, player, dropCoords)
     SetStat(src, 'hunger', Config.Penalties.resetHunger)
     SetStat(src, 'thirst', Config.Penalties.resetThirst)
     SetStat(src, 'infection', Config.Penalties.resetInfection)
+    -- Clear status meters that drive damage gates (cold / bleeding) so the
+    -- player isn't immediately re-killed by the corex-survival regen blocker
+    -- when they respawn — the metadata used to keep its pre-death values,
+    -- which caused a death loop on the freezing mountain.
+    SetStat(src, 'cold', 0)
+    SetStat(src, 'bleeding', 0)
 
     SyncStateBag(src, 'hunger', Config.Penalties.resetHunger)
     SyncStateBag(src, 'thirst', Config.Penalties.resetThirst)
     SyncStateBag(src, 'infection', Config.Penalties.resetInfection)
+    SyncStateBag(src, 'cold', 0)
+    SyncStateBag(src, 'bleeding', 0)
 
     SetPlayerState(src, 'loading')
     recentDeathClaims[src] = nil
