@@ -61,6 +61,14 @@ local function SyncStateBag(src, key, value)
     end)
 end
 
+local function ResetSurvivalRuntime(src)
+    local ok, result = pcall(function()
+        if GetResourceState('corex-survival') ~= 'started' then return false end
+        return exports['corex-survival']:ResetPlayerDamageState(src)
+    end)
+    return ok and result == true
+end
+
 local function DropRandomItems(src, coords)
     if not coords then return end
 
@@ -184,6 +192,7 @@ local function CompleteRespawn(src, player, dropCoords)
     SyncStateBag(src, 'infection', Config.Penalties.resetInfection)
     SyncStateBag(src, 'cold', 0)
     SyncStateBag(src, 'bleeding', 0)
+    ResetSurvivalRuntime(src)
 
     SetPlayerState(src, 'loading')
     recentDeathClaims[src] = nil
@@ -206,9 +215,9 @@ RegisterNetEvent('corex-death:server:playerDied', function(coords)
     local cy = tonumber(coords.y) or 0
     local cz = tonumber(coords.z) or 0
     local deathCoords = { x = cx, y = cy, z = cz }
-    StoreDeathClaim(src, deathCoords)
 
     if not IsPlayerActuallyDead(src) then return end
+    StoreDeathClaim(src, deathCoords)
 
     local now = GetGameTimer()
     if lastDeathLog[src] and (now - lastDeathLog[src]) < DEATH_LOG_RATE_MS then return end
@@ -284,6 +293,13 @@ end)
 RegisterNetEvent('corex-death:server:localRespawnFinished', function()
     local src = source
     local player = GetPlayer(src)
+    local playerState = GetPlayerState(src)
+    local deathClaim = GetRecentDeathClaim(src)
+
+    if playerState ~= 'dead' and playerState ~= 'loading' and not deathClaim then
+        RejectRespawn(src, 'not_dead')
+        return
+    end
 
     SetPlayerState(src, 'active')
     recentDeathClaims[src] = nil
@@ -291,10 +307,15 @@ RegisterNetEvent('corex-death:server:localRespawnFinished', function()
     SetStat(src, 'hunger', Config.Penalties.resetHunger)
     SetStat(src, 'thirst', Config.Penalties.resetThirst)
     SetStat(src, 'infection', Config.Penalties.resetInfection)
+    SetStat(src, 'cold', 0)
+    SetStat(src, 'bleeding', 0)
 
     SyncStateBag(src, 'hunger', Config.Penalties.resetHunger)
     SyncStateBag(src, 'thirst', Config.Penalties.resetThirst)
     SyncStateBag(src, 'infection', Config.Penalties.resetInfection)
+    SyncStateBag(src, 'cold', 0)
+    SyncStateBag(src, 'bleeding', 0)
+    ResetSurvivalRuntime(src)
 
     if player then
         SavePlayer(src)

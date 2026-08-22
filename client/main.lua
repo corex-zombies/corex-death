@@ -150,6 +150,7 @@ end
 local function ForceLocalRespawn()
     if respawnInProgress then return end
     StartRespawnTransition()
+    TriggerEvent('corex-death:client:prepareRespawn')
 
     local spawn = Config.DeathScreen.respawnCoords
     local heading = spawn.heading or spawn.w or 0.0
@@ -171,6 +172,7 @@ local function ForceLocalRespawn()
     SetPlayerControl(PlayerId(), true, 0)
 
     TriggerServerEvent('corex-death:server:localRespawnFinished')
+    TriggerEvent('corex-death:client:respawnFinished')
 
     ResetDeathState()
     SuppressDeathScreen(5000)
