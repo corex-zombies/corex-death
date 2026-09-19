@@ -16,6 +16,7 @@ client_scripts {
 }
 
 server_scripts {
+    'server/inventory_bridge.lua',
     'server/main.lua'
 }
 
@@ -27,7 +28,8 @@ files {
     'html/script.js'
 }
 
+-- corex-zones was declared and never called. The only effect of leaving it here
+-- was that death handling went down whenever zones did.
 dependencies {
-    'corex-core',
-    'corex-zones'
+    'corex-core'
 }

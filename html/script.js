@@ -134,33 +134,28 @@ function triggerRespawn(origin) {
     postToClient('requestRespawn', { origin });
 }
 
-respawnBtn.addEventListener('click', () => triggerRespawn('click'));
+respawnBtn.addEventListener('click', (e) => {
+    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    triggerRespawn('click');
+});
 
 // Keyboard fallback - NUI focused mode routes keys to the iframe. Enter,
-// NumpadEnter, and Space all trigger respawn once the button is ready.
+// NumpadEnter, Space and E trigger respawn once ready. Modified shortcuts
+// (notably Alt+Enter for display mode) must never become gameplay actions.
 document.addEventListener('keydown', (e) => {
     if (!buttonReady) return;
     if (e.repeat) return;
 
     const key = e.key;
-    if (key === 'Enter' || key === ' ' || key === 'Spacebar' || e.code === 'Space' || e.code === 'NumpadEnter') {
+    if (key === 'Enter' || key === ' ' || key === 'Spacebar' || key.toLowerCase() === 'e' || e.code === 'Space' || e.code === 'NumpadEnter') {
         e.preventDefault();
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
         triggerRespawn(`key:${e.code || key}`);
     }
 });
 
-// Safety: if the user somehow focuses outside the button, clicking anywhere
-// on the screen after the countdown also triggers respawn. This prevents
-// lockouts caused by z-index / layout bugs obscuring the button.
-deathScreen.addEventListener('click', (e) => {
-    if (!buttonReady) return;
-    if (respawnInFlight) return;
-    // Only trigger if click was NOT on an interactive ignored element.
-    // (Currently only the button is interactive - but guard anyway.)
-    if (e.target === respawnBtn || respawnBtn.contains(e.target)) return;
-    debugLog('respawn click via screen fallback');
-    triggerRespawn('screen-fallback');
-});
+// A background click may just focus the game. Respawn requires its explicit
+// button or an advertised unmodified key, especially when penalties are enabled.
 
 window.addEventListener('message', (event) => {
     const data = event.data || {};

@@ -268,10 +268,10 @@ CreateThread(function()
         if isDead and not respawnRequested then
             Wait(0)
             local elapsed = GetGameTimer() - deathScreenOpenedAt
-            if elapsed >= Config.DeathScreen.duration then
+            if elapsed >= Config.DeathScreen.duration and not IsNuiFocused() then
                 -- Control 18 = INPUT_FRONTEND_ACCEPT (Enter), 22 = INPUT_JUMP
-                -- (Space). Use IsControlJustPressed with group 0 - these still
-                -- fire even while NUI is focused because we check raw control.
+                -- (Space). A focused NUI owns its keys, including modifier
+                -- shortcuts; raw controls must not bypass its input guards.
                 if IsControlJustPressed(0, 18) or IsControlJustPressed(0, 201) then
                     SendRespawnRequest('keyboard:enter')
                 elseif IsControlJustPressed(0, 38) then
@@ -320,6 +320,32 @@ RegisterNetEvent('corex-death:client:prepareRespawn', function()
     CloseDeathScreen()
     ResetDeathState()
     SuppressDeathScreen()
+end)
+
+RegisterNetEvent('corex-death:client:adminRevive', function()
+    local ped = PlayerPedId()
+    if not ped or ped == 0 then return end
+    local wasDead = isDead or IsEntityDead(ped) or GetEntityHealth(ped) <= 100
+    if wasDead then
+        StartRespawnTransition()
+        CloseDeathScreen()
+        ResetDeathState()
+        local coords, heading = GetEntityCoords(ped), GetEntityHeading(ped)
+        if IsEntityDead(ped) or GetEntityHealth(ped) <= 100 then
+            NetworkResurrectLocalPlayer(coords.x, coords.y, coords.z, heading, true, false)
+            ped = PlayerPedId()
+        end
+        ClearPedTasksImmediately(ped)
+        FreezeEntityPosition(ped, false)
+        SetEntityInvincible(ped, false)
+        SetPlayerInvincible(PlayerId(), false)
+        SetPlayerControl(PlayerId(), true, 0)
+        respawnInProgress = false
+        SuppressDeathScreen(3000)
+    end
+    ClearPedBloodDamage(ped)
+    SetEntityHealth(ped, GetEntityMaxHealth(ped))
+    if wasDead then TriggerEvent('corex-death:client:reviveFinished') end
 end)
 
 RegisterNetEvent('corex-death:client:resumeDeath', function()
